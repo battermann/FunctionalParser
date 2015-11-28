@@ -5,30 +5,21 @@ namespace FunctionalParser
 {
     public static class RomanNumerals
     {
-        public static Parser<int> RomanNumeral()
-        {
-            var toInt = new Dictionary<string, int>
-            {
-                {"M", 1000}, {"D", 500}, {"C", 100}, {"L", 50}, {"X", 10}, {"V", 5}, {"I", 1}, {"CM", 900}, {"CD", 400}, {"XC", 90}, {"XL", 40}, {"IX", 9}, {"Iv", 4},
-            };
-
-            return
-                (from n in Parsers.StringP("IV")
-                    .Choice(Parsers.StringP("IX"))
-                    .Choice(Parsers.StringP("XL"))
-                    .Choice(Parsers.StringP("XC"))
-                    .Choice(Parsers.StringP("CD"))
-                    .Choice(Parsers.StringP("CM"))
-                    .Choice(Parsers.StringP("I"))
-                    .Choice(Parsers.StringP("V"))
-                    .Choice(Parsers.StringP("X"))
-                    .Choice(Parsers.StringP("L"))
-                    .Choice(Parsers.StringP("C"))
-                    .Choice(Parsers.StringP("D"))
-                    .Choice(Parsers.StringP("M"))
-                from r in Parsers.Return(toInt[n]) select r)
+        public readonly static Parser<int> RomanNumeral =
+            Parsers.StringP("IV").Select(x => 4)
+                .Choice(Parsers.StringP("IX").Select(x => 9))
+                .Choice(Parsers.StringP("XL").Select(x => 40))
+                .Choice(Parsers.StringP("XC").Select(x => 90))
+                .Choice(Parsers.StringP("CD").Select(x => 400))
+                .Choice(Parsers.StringP("CM").Select(x => 900))
+                .Choice(Parsers.StringP("I").Select(x => 1))
+                .Choice(Parsers.StringP("V").Select(x => 5))
+                .Choice(Parsers.StringP("X").Select(x => 10))
+                .Choice(Parsers.StringP("L").Select(x => 50))
+                .Choice(Parsers.StringP("C").Select(x => 100))
+                .Choice(Parsers.StringP("D").Select(x => 500))
+                .Choice(Parsers.StringP("M").Select(x => 1000))
                 .Many()
-                .Select(x => x.Sum());
-        }
+                .Select(rns => rns.Sum());
     }
 }
