@@ -276,5 +276,17 @@ namespace FunctionalParserTests
             var result = inp.Parse(ArithmeticExpressions.Expr());
             Check.That(result).IsEmpty();
         }
+
+        [TestCase("I",	1)]
+        [TestCase("III", 	3)]
+        [TestCase("IX", 	9)]
+        [TestCase("MLXVI", 1066)]
+        [TestCase("MCMLXXXIX", 	1989)]
+        public void RomanNumerals_tests(string rn, int an)
+        {
+            var numnber = rn.Parse(RomanNumerals.RomanNumeral());
+
+            Check.That(numnber.First().Item1).IsEqualTo(an);
+        }
     }
 }
