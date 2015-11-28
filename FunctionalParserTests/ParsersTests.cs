@@ -159,13 +159,13 @@ namespace FunctionalParserTests
         [Test]
         public void Linq_query_syntax_test()
         {
-            var p = 
+            var p =
                 from x in Parsers.Item
                 from _ in Parsers.Item
                 from z in Parsers.Item
-                select new string(new []{x,z});
+                select new string(new[] { x, z });
 
-            var result = "abc".Parse(p); 
+            var result = "abc".Parse(p);
 
             Check.That(result).ContainsExactly(Tuple.Create("ac", String.Empty));
         }
@@ -240,9 +240,10 @@ namespace FunctionalParserTests
         {
             var p =
                 from ign1 in Parsers.Symbol("[")
-                from n    in Parsers.Natural    
-                from ns   in (from ign2 in Parsers.Symbol(",") from n2 in Parsers.Natural select n2)
-                                    .Many()
+                from n in Parsers.Natural
+                from ns in
+                    (from ign2 in Parsers.Symbol(",") from n2 in Parsers.Natural select n2)
+                           .Many()
                 from ign3 in Parsers.Symbol("]")
                 select (new[] { n }.Concat(ns));
 
@@ -277,11 +278,11 @@ namespace FunctionalParserTests
             Check.That(result).IsEmpty();
         }
 
-        [TestCase("I",	1)]
-        [TestCase("III", 	3)]
-        [TestCase("IX", 	9)]
+        [TestCase("I", 1)]
+        [TestCase("III", 3)]
+        [TestCase("IX", 9)]
         [TestCase("MLXVI", 1066)]
-        [TestCase("MCMLXXXIX", 	1989)]
+        [TestCase("MCMLXXXIX", 1989)]
         public void RomanNumerals_tests(string rn, int an)
         {
             var numnber = rn.Parse(RomanNumerals.RomanNumeral());
