@@ -48,8 +48,7 @@ namespace FunctionalParser
                 .Choice(Parsers.CharP('L').Select(x => 50))
                 .Choice(Parsers.CharP('D').Select(x => 500))
                 .Many1()
-                .Sat(ns => ns.Zip(ns.Skip(1), (a,b) => a > b).All(b => b))
-                //.Sat(ns => ns.Zip(ns.Skip(1), Tuple.Create).All(t => t.Item1 > t.Item2))
+                .Sat(ns => ns.Zip(ns.Skip(1), (a, b) => a > b).All(b => b))
                 .Select(ns => ns.Sum());
     }
 }
