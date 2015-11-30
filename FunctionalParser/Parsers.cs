@@ -68,7 +68,12 @@ namespace FunctionalParser
 
         public static Parser<char> Sat(Predicate<char> p)
         {
-            return Item.Bind(c => p(c) ? Return(c) : Failure<char>());
+            return Item.Sat(p);
+        }
+
+        public static Parser<T> Sat<T>(this Parser<T> parser, Predicate<T> predicate)
+        {
+            return parser.Bind(c => predicate(c) ? Return(c) : Failure<T>());
         }
 
         public static readonly Parser<char> Digit = Sat(Char.IsDigit);
@@ -106,19 +111,25 @@ namespace FunctionalParser
 
         public static Parser<List<T>> Many<T>(this Parser<T> p)
         {
+            return p.Aggregate(new List<T>(), (state, current) => state.Concat(new[] { current }).ToList());
+        }
+
+        public static Parser<TResult> Aggregate<TSource, TResult>(this Parser<TSource> p, TResult seed, Func<TResult, TSource, TResult> func)
+        {
             return inp =>
             {
-                var state = Tuple.Create(new List<T>(), inp);
+                var state = new List<Tuple<TResult, string>> { Tuple.Create(seed, inp) };
 
-                while (true)
+                while (state.Any())
                 {
-                    var newState = p(state.Item2);
+                    var newState = p(state.First().Item2);
                     if (!newState.Any())
                         break;
-                    state = Tuple.Create(state.Item1.Concat(new[] { newState.First().Item1 }).ToList(), newState.First().Item2);
+
+                    state = new List<Tuple<TResult, string>>{ Tuple.Create(func(state.First().Item1, newState.First().Item1), newState.First().Item2)};
                 }
 
-                return Return(state.Item1)(state.Item2);
+                return state;
             };
         }
 

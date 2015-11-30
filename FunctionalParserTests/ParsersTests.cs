@@ -123,6 +123,20 @@ namespace FunctionalParserTests
         }
 
         [Test]
+        public void Aggregate_test()
+        {
+            var p = Parsers.Digit.Aggregate(0, (i, c) => i + (c - 48));
+
+            var result = "1234567890".Parse(p);
+
+            Check.That(result.First().Item1).IsEqualTo(45);
+
+            var result2 = "foo".Parse(p);
+
+            Check.That(result2.First().Item1).IsEqualTo(0);
+        }
+
+        [Test]
         public void Many1_test()
         {
             var result = "abc".Parse(Parsers.Item.Many1());
@@ -283,11 +297,39 @@ namespace FunctionalParserTests
         [TestCase("IX", 9)]
         [TestCase("MLXVI", 1066)]
         [TestCase("MCMLXXXIX", 1989)]
-        public void RomanNumerals_tests(string rn, int an)
+        [TestCase("MMMMMMM", 7000)]
+        public void RomanNumeralsNoSyntaxCheck_should_succeed(string rn, int an)
+        {
+            var numnber = rn.Parse(RomanNumerals.RomanNumeralNoSyntaxCheck);
+
+            Check.That(numnber.First().Item1).IsEqualTo(an);
+        }
+
+        [TestCase("I", 1)]
+        [TestCase("III", 3)]
+        [TestCase("IX", 9)]
+        [TestCase("MLXVI", 1066)]
+        [TestCase("VI", 6)]
+        [TestCase("MCMLXXXIX", 1989)]
+        [TestCase("MMMMMMM", 7000)]
+        public void RomanNumerals_should_succeed(string rn, int an)
         {
             var numnber = rn.Parse(RomanNumerals.RomanNumeral);
 
             Check.That(numnber.First().Item1).IsEqualTo(an);
+        }
+
+        [TestCase("IIII")]
+        [TestCase("VX")]
+        [TestCase("IVX")]
+        [TestCase("MDLVX")]
+        [TestCase("sdafasd")]
+        [TestCase("")]
+        public void RomanNumerals_should_fail(string rn)
+        {
+            var result = rn.Parse(RomanNumerals.RomanNumeral);
+
+            Check.That(result).IsEmpty();
         }
     }
 }
