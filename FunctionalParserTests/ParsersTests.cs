@@ -271,14 +271,18 @@ namespace FunctionalParserTests
         }
 
         [TestCase("42", 42)]
+        [TestCase("(((((42)))))", 42)]
         [TestCase("1+1", 2)]
+        [TestCase("(1+1)", 2)]
         [TestCase("1*1", 1)]
         [TestCase("1*2", 2)]
+        [TestCase("(1*2)", 2)]
         [TestCase("2*3+4", 10)]
         [TestCase("2*(3+4)", 14)]
         [TestCase("2 * 3 +  4", 10)]
         [TestCase("2*(     3+ 4)  ", 14)]
         [TestCase("2*3-4", 6)] // leaves "-4" unconsumed
+        [TestCase("((1))*(2+(((3)))*(4+(((5))+6))*(((7*8)))+9)", 2531)]
         public void ArithmeticExpressions_should_succeed(string inp, int expected)
         {
             var result = inp.Parse(ArithmeticExpressions.Expr());
@@ -286,6 +290,10 @@ namespace FunctionalParserTests
         }
 
         [TestCase("-1")]
+        [TestCase("()")]
+        [TestCase("(5")]
+        [TestCase("(1+2")]
+        [TestCase("(1+2()")]
         public void ArithmeticExpressions_should_fail(string inp)
         {
             var result = inp.Parse(ArithmeticExpressions.Expr());
